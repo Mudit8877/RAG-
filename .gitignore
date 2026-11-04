@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables and API keys
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.pyc
+
+# ChromaDB database
+db/
+chroma_db/
+
+# IDE files
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
