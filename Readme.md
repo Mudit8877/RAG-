@@ -1,5 +1,5 @@
 
-# RAG Project using LangChain and ChromaDB
+# RAG Project using LangChain and ChromaDB(Under Construction)
 
 ## Overview
 This project implements a Retrieval-Augmented Generation (RAG)

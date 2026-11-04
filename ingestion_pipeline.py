@@ -69,13 +69,12 @@ def split_documents(documents, chunk_size=800, chunk_overlap=100):
     #         print(f"\n... and {len(chunks) - 5} more chunks")
     
     return chunks
-#vector store and embeddings
+#vector store and embeddings using openai model
 # def create_vector_store(chunks, persist_directory="db/chroma_db"):
 #     """Create and persist ChromaDB vector store"""
 #     print("Creating embeddings and storing in ChromaDB...")
         
 #     # embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
-#     embedding_model  = VoyageAIEmbeddings(model="voyage-4-lite")
     
 #     # Create ChromaDB vector store
 #     print("--- Creating vector store ---")
@@ -90,7 +89,7 @@ def split_documents(documents, chunk_size=800, chunk_overlap=100):
 #     print(f"Vector store created and saved to {persist_directory}")
 #     return vectorstore
 
-#Method 2 with reduced rate limits
+#Method 2 with reduced rate limits with free voyageAI(With lite model takes about 5 Hour to get the Vector Database)
 def create_vector_store(chunks, persist_directory="db/chroma_db_retry"):
     """Create and persist ChromaDB vector store"""
 
@@ -135,7 +134,7 @@ def create_vector_store(chunks, persist_directory="db/chroma_db_retry"):
 
 
 def main():
-    print("Main Functioon")
+    print("Main Function")
     documents = load_documents(docs_path="docs")
     chunks = split_documents(documents)
     vectorstore = create_vector_store(chunks)
