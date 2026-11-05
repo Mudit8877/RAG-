@@ -32,3 +32,9 @@ Thumbs.db
 
 # Log files
 *.log
+
+gemini_usage.json
+.env
+
+groq_usage.json
+.env
