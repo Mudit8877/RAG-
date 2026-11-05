@@ -95,9 +95,7 @@ def create_vector_store(chunks, persist_directory="db/chroma_db_retry"):
 
     print("Creating embeddings and storing in ChromaDB...")
 
-    embedding_model = VoyageAIEmbeddings(
-        model="voyage-4-lite"
-    )
+    embedding_model = VoyageAIEmbeddings(model="voyage-4-lite")
 
     print("--- Creating vector store ---")
 
