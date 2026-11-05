@@ -107,7 +107,7 @@ def start_chat():
         question = input("\nYour question: ")
         
         if question.lower() == 'quit':
-            print("Goodbye!")
+            print("Goodbye! Have a Nice Day :)")
             break
             
         ask_question(question)

@@ -18,7 +18,7 @@ persistent_directory = "db/chroma_db_retry"
 # 1. Groq daily request limiter
 # ----------------------------------
 
-DAILY_REQUEST_LIMIT = 24
+DAILY_REQUEST_LIMIT = 22
 USAGE_FILE = "groq_usage.json"
 
 today = str(date.today())
