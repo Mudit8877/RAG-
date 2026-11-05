@@ -2,11 +2,13 @@
 
 ## Overview
 
-This project implements a Retrieval-Augmented Generation (RAG) pipeline using LangChain, vector embeddings, ChromaDB, and Large Language Models (LLMs).
+This project implements a History-Aware Retrieval-Augmented Generation (RAG) pipeline using LangChain, vector embeddings, ChromaDB, and Large Language Models (LLMs).
 
-The application processes multiple text documents, converts them into vector embeddings, stores them in a persistent ChromaDB vector database, retrieves relevant information based on user queries, and generates context-aware answers using an LLM.
+The application processes multiple text documents, converts them into vector embeddings, and stores them in a persistent ChromaDB vector database. It retrieves relevant information based on user queries and generates context-aware answers using an LLM.
 
-The project provides flexibility to choose between different embedding providers and language models. Users can select their preferred models based on their requirements, API availability, and preferences.
+The project also supports conversational chat history, allowing users to ask follow-up questions while maintaining the context of previous interactions.
+
+It provides flexibility to choose between different embedding providers and language models. Users can select their preferred models based on their requirements, API availability, and preferences.
 
 ## Technologies Used
 
@@ -29,13 +31,17 @@ The project provides flexibility to choose between different embedding providers
   - Voyage AI Embeddings
 - Stores document embeddings in a persistent ChromaDB vector database.
 - Uses cosine similarity for vector retrieval.
-- Retrieves the top 5 relevant document chunks for a user query.
+- Retrieves the top 5 relevant document chunks for a user query (configurable).
 - Supports multiple LLM providers:
   - Groq
   - OpenAI ChatGPT
 - Allows users to change embedding models and LLMs according to their preferences.
-- Generates context-aware answers using retrieved document information.
-- Maintains a local daily request counter as an additional usage safeguard.
+- Maintains conversational chat history using LangChain message types.
+- Supports history-aware retrieval by incorporating previous user questions into the current search query.
+- Handles follow-up questions using previous conversational context.
+- Combines chat history, retrieved documents, and the current question into a single prompt.
+- Uses only one LLM API call per user question for answer generation.
+- Maintains a local daily request counter as an additional usage safeguard when using Groq.
 
 ## Project Structure
 
@@ -117,7 +123,7 @@ The project supports:
 - **OpenAI Embeddings**
 - **Voyage AI Embeddings**
 
-Users can choose their preferred embedding provider in the ingestion and retrieval code.
+Users can choose their preferred embedding provider and model in the ingestion and retrieval code.
 
 **Important:** Use the same embedding model and compatible configuration during document ingestion and query retrieval. If you change the embedding model, you must regenerate the vector database using the selected embedding model.
 
@@ -154,9 +160,9 @@ This script:
 4. Stores the embeddings in ChromaDB.
 5. Saves the vector database locally.
 
-### Stage 2: Retrieval and Answer Generation
+### Stage 2: History-Aware Retrieval and Answer Generation
 
-After completing document ingestion, run:
+After completing ingestion, run:
 
 ```bash
 python LLM_retrieval.py
@@ -165,10 +171,42 @@ python LLM_retrieval.py
 This script:
 
 1. Loads the existing ChromaDB vector database.
-2. Converts the user query into an embedding using the selected embedding model.
-3. Retrieves the top 5 relevant document chunks.
-4. Passes the retrieved context and query to the selected LLM.
-5. Generates and displays an answer based on the retrieved information.
+2. Accepts a question from the user.
+3. Checks whether previous conversation history is available.
+4. Incorporates recent user questions into the current search query to provide conversational context.
+5. Converts the search query into an embedding using the selected embedding model.
+6. Retrieves the most relevant document chunks from ChromaDB.
+7. Combines the conversation history, retrieved documents, and current question into a single prompt.
+8. Sends the prompt to the selected LLM provider.
+9. Generates a context-aware answer using a single LLM API call per question.
+10. Stores the user's question and the AI-generated answer in chat history for subsequent interactions.
+
+## History-Aware Retrieval
+
+The project supports conversational question answering by maintaining chat history throughout a session.
+
+For example:
+
+**First question:**
+
+```text
+User: How much did Microsoft pay to acquire GitHub?
+AI: Microsoft acquired GitHub for $7.5 billion.
+```
+
+**Follow-up question:**
+
+```text
+User: When did it happen?
+```
+
+The retrieval process incorporates previous user questions to provide additional context when searching ChromaDB.
+
+The LLM also receives the previous conversation, retrieved documents, and current question to generate an appropriate response.
+
+This allows the application to handle follow-up questions without making a separate LLM API call for query rewriting.
+
+**Note:** The current implementation uses simple question concatenation for contextual retrieval rather than a separate AI-based query rewriting step. Complex follow-up questions may require more advanced retrieval techniques.
 
 ## Vector Database
 
@@ -188,17 +226,22 @@ To recreate the database, run the ingestion pipeline after selecting your prefer
 
 The retrieval script maintains a local usage counter in `groq_usage.json`.
 
-This counter acts as an additional safeguard for tracking daily generation attempts when using the Groq configuration. Groq independently enforces its API rate limits, including requests per minute and token limits.
+This counter acts as an additional safeguard for tracking daily generation attempts when using the Groq configuration.
+
+Groq independently enforces its API rate limits, including requests per minute, requests per day, and token limits.
+
+The local counter does not replace Groq's official API rate limits.
 
 ## Future Improvements
 
 - Add support for PDF and other document formats.
 - Implement a web-based interface for user queries.
 - Improve retrieval accuracy using advanced retrieval techniques.
-- Add conversation history and memory.
+- Implement persistent chat history across different sessions.
+- Add conversation summarization for long chat sessions.
 - Implement source citations in generated answers.
 - Improve error handling and API usage monitoring.
 
 ## Project Status
 
-**Under Construction** — The basic document ingestion, vector storage, retrieval, and LLM-based answer generation pipeline has been implemented. Additional features and improvements are planned.
+**Under Construction** — The project currently implements document ingestion, vector storage, history-aware retrieval, conversational question answering, and LLM-based answer generation. Additional features and improvements are planned.
